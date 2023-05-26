@@ -60,21 +60,19 @@ module.exports.addProduct = async (req, res) => {
         });
     } else {
         let maxId = 0;
-        await Product.findOne().sort('-itemId').exec(function (err, item) {
-            maxId = item.id;
+        await Product.findOne().sort('-id').exec(async function (err, item) {
+            const product = {
+                id: (item?.id || 0) + 1,
+                title: req.body.title,
+                price: req.body.price,
+                description: req.body.description,
+                image: req.body.image,
+                category: req.body.category,
+            };
+            await Product.insertMany([product])
+                .then(product => res.json(product))
+                .catch(err => console.log(err))
         });
-        const product = {
-            id: maxId + 1,
-            title: req.body.title,
-            price: req.body.price,
-            description: req.body.description,
-            image: req.body.image,
-            category: req.body.category,
-        };
-        await Product.insertMany([product])
-            .then(product => res.json(product))
-            .catch(err => console.log(err))
-        //res.json(product);
     }
 };
 

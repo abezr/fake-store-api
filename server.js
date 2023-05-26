@@ -21,6 +21,7 @@ const homeRoute = require('./routes/home');
 const cartRoute = require('./routes/cart');
 const userRoute = require('./routes/user');
 const authRoute = require('./routes/auth');
+const orderRoute = require('./routes/order');
 const Product = require("./model/product");
 
 //middleware
@@ -41,6 +42,7 @@ app.use('/products', productRoute);
 app.use('/carts', cartRoute);
 app.use('/users', userRoute);
 app.use('/auth', authRoute);
+app.use('/orders', orderRoute);
 
 //mongoose
 mongoose.set('useFindAndModify', false);
