@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Product = require("./product");
 const schema = mongoose.Schema
 
 const orderSchema = new schema({
@@ -19,7 +20,25 @@ const orderSchema = new schema({
         lat:String,
         long:String
     },
-    phone:String
+    phone:String,
+    date:{
+        type:Date,
+        required:true
+    },
+    products:[
+        {
+            productId:{
+                type:schema.Types.Number,
+                ref:Product,
+                required:true
+            },
+            quantity:{
+                type:Number,
+                required:true
+            }
+        }
+    ]
+    
 })
 
 module.exports = mongoose.model('order',orderSchema)

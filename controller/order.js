@@ -47,6 +47,8 @@ module.exports.addOrder = async (req, res) => {
 					long: req.body.geolocation.long,
 				} : null,
 				phone: req.body.phone,
+				date: new Date(),
+				products: req.body.products,
 			};
 			await Order.insertMany([order])
 				.then(order => res.json(order))
