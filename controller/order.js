@@ -1,32 +1,45 @@
 const Order = require('../model/order');
+const AWS = require('aws-sdk');
+const tableName = 'orders';
+AWS.config.update({ region: 'eu-central-1' });
 
 module.exports.getAllOrder = (req, res) => {
-	const limit = Number(req.query.limit) || 0;
-	const sort = req.query.sort == 'desc' ? -1 : 1;
+	var params = {
+		TableName: tableName
+	};
+	const client = new AWS.DynamoDB.DocumentClient();
+	client.scan(params, (err, data) => {
+		if (err) {
+			console.log(err);
+		} else {
+			var items = [];
+			for (var i in data.Items)
+				items.push(data.Items[i]);
 
-	Order.find()
-		.select(['-_id'])
-		.limit(limit)
-		.sort({
-			id: sort,
-		})
-		.then((orders) => {
-			res.json(orders);
-		})
-		.catch((err) => console.log(err));
+			res.contentType = 'application/json';
+			res.send(items);
+		}
+	});
 };
 
 module.exports.getOrder = (req, res) => {
+	var params = {
+		TableName: tableName,
+		Key: {
+			'id': req.params.id
+		}
+	};
 	const id = req.params.id;
+// Call DynamoDB to read the item from the table
+	const client = new AWS.DynamoDB.DocumentClient();
 
-	Order.findOne({
-		id,
-	})
-		.select(['-_id'])
-		.then((order) => {
-			res.json(order);
-		})
-		.catch((err) => console.log(err));
+	client.get(params, function(err, data) {
+		if (err) {
+			console.log("Error", err);
+		} else {
+			res.json(data.Item);
+		}
+	});
 };
 
 module.exports.addOrder = async (req, res) => {
@@ -36,9 +49,19 @@ module.exports.addOrder = async (req, res) => {
 			message: 'data is undefined',
 		});
 	} else {
-		await Order.findOne().sort('-id').exec(async function (err, item) {
+		var params = {
+			TableName: tableName,
+			Key: {
+				'id': req.params.id
+			},
+			ProjectionExpression: 'id',
+			ScanIndexForward: false
+		};
+		const client = new AWS.DynamoDB.DocumentClient();
+
+		await client.get(params, (err, data) => {
 			const order = {
-				id: (item?.id||0) + 1,
+				id: (data.Item?.id||0) + 1,
 				email: req.body.email,
 				username: req.body.username,
 				address: req.body.address,
@@ -50,9 +73,18 @@ module.exports.addOrder = async (req, res) => {
 				date: new Date(),
 				products: req.body.products,
 			};
-			await Order.insertMany([order])
-				.then(order => res.json(order))
-				.catch(err => console.log(err))
+			var params = {
+				TableName: tableName,
+				Item: order
+			};
+			client.put(params, (err, data) => {
+				if (err) {
+					console.error("Unable to add item.");
+					console.error("Error JSON:", JSON.stringify(err, null, 2));
+				} else {
+					console.log("Added item:", res.json(data));
+				}
+			});
 		});
 		
 	}
