@@ -1,106 +1,116 @@
 const Order = require('../model/order');
+// const AWS = require('aws-sdk');
+const CyclicDb = require("@cyclic.sh/dynamodb");
 
-module.exports.getAllOrder = (req, res) => {
-	const limit = Number(req.query.limit) || 0;
-	const sort = req.query.sort == 'desc' ? -1 : 1;
+const tableName = 'orders';
+// AWS.config.update({ region: 'eu-central-1' });
 
-	Order.find()
-		.select(['-_id'])
-		.limit(limit)
-		.sort({
-			id: sort,
-		})
-		.then((orders) => {
-			res.json(orders);
-		})
-		.catch((err) => console.log(err));
+module.exports.getAllOrder = async (req, res) => {
+    var params = {
+        TableName: tableName
+    };
+    const client = CyclicDb("dungarees-crowCyclicDB")
+    const col = client.collection('orders');
+    // const client = new AWS.DynamoDB.DocumentClient();
+    const items = await col.list();
+    res.contentType = 'application/json';
+    res.send(items);
 };
 
-module.exports.getOrder = (req, res) => {
-	const id = req.params.id;
+module.exports.getOrder = async (req, res) => {
+    var params = {
+        TableName: tableName,
+        Key: {
+            'id': req.params.id
+        }
+    };
+    const client = CyclicDb("dungarees-crowCyclicDB")
+    const col = client.collection('orders');
 
-	Order.findOne({
-		id,
-	})
-		.select(['-_id'])
-		.then((order) => {
-			res.json(order);
-		})
-		.catch((err) => console.log(err));
+    res.json(await col.get(id));
 };
 
 module.exports.addOrder = async (req, res) => {
-	if (!req.body) {
-		res.json({
-			status: 'error',
-			message: 'data is undefined',
-		});
-	} else {
-		await Order.findOne().sort('-id').exec(async function (err, item) {
-			const order = {
-				id: (item?.id||0) + 1,
-				email: req.body.email,
-				username: req.body.username,
-				address: req.body.address,
-				geolocation: req.body.geolocation ? {
-					lat: req.body.geolocation.lat,
-					long: req.body.geolocation.long,
-				} : null,
-				phone: req.body.phone,
-				date: new Date(),
-				products: req.body.products,
-			};
-			await Order.insertMany([order])
-				.then(order => res.json(order))
-				.catch(err => console.log(err))
-		});
+    if (!req.body) {
+        res.json({
+            status: 'error',
+            message: 'data is undefined',
+        });
+    } else {
+        var params = {
+            TableName: tableName,
+            Key: {
+                'id': req.params.id
+            },
+            ProjectionExpression: 'id',
+            ScanIndexForward: false
+        };
+        const client = CyclicDb("dungarees-crowCyclicDB")
+        const col = client.collection('orders');
 
-	}
+        const id = await col.latest()?.id;
+        const order = {
+            id: (data.Item?.id || 0) + 1,
+            email: req.body.email,
+            username: req.body.username,
+            address: req.body.address,
+            geolocation: req.body.geolocation ? {
+                lat: req.body.geolocation.lat,
+                long: req.body.geolocation.long,
+            } : null,
+            phone: req.body.phone,
+            date: new Date(),
+            products: req.body.products,
+        };
+
+        await client.set(id, order);
+        res.json(order);
+    }
 };
 
 module.exports.editOrder = (req, res) => {
-	if (!req.body || req.params.id == null) {
-		res.json({
-			status: 'error',
-			message: 'something went wrong! check your sent data',
-		});
-	} else {
-		res.json({
-			id: parseInt(req.params.id),
-			email: req.body.email,
-			ordername: req.body.ordername,
-			password: req.body.password,
-			name: {
-				firstname: req.body.firstname,
-				lastname: req.body.lastname,
-			},
-			address: {
-				city: req.body.address.city,
-				street: req.body.address.street,
-				number: req.body.number,
-				zipcode: req.body.zipcode,
-				geolocation: {
-					lat: req.body.address.geolocation.lat,
-					long: req.body.address.geolocation.long,
-				},
-			},
-			phone: req.body.phone,
-		});
-	}
+    if (!req.body || req.params.id == null) {
+        res.json({
+            status: 'error',
+            message: 'something went wrong! check your sent data',
+        });
+    } else {
+        res.json({
+            id: parseInt(req.params.id),
+            email: req.body.email,
+            ordername: req.body.ordername,
+            password: req.body.password,
+            name: {
+                firstname: req.body.firstname,
+                lastname: req.body.lastname,
+            },
+            address: {
+                city: req.body.address.city,
+                street: req.body.address.street,
+                number: req.body.number,
+                zipcode: req.body.zipcode,
+                geolocation: {
+                    lat: req.body.address.geolocation.lat,
+                    long: req.body.address.geolocation.long,
+                },
+            },
+            phone: req.body.phone,
+        });
+    }
 };
 
 module.exports.deleteOrder = (req, res) => {
-	if (req.params.id == null) {
-		res.json({
-			status: 'error',
-			message: 'cart id should be provided',
-		});
-	} else {
-		Order.findOne({ id: req.params.id })
-			.select(['-_id'])
-			.then((order) => {
-				res.json(order);
-			})
-			.catch((err) => console.log(err));
-	}
+    if (req.params.id == null) {
+        res.json({
+            status: 'error',
+            message: 'cart id should be provided',
+        });
+    } else {
+        Order.findOne({id: req.params.id})
+            .select(['-_id'])
+            .then((order) => {
+                res.json(order);
+            })
+            .catch((err) => console.log(err));
+    }
 };
