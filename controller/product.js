@@ -1,35 +1,17 @@
 const Product = require('../model/product');
-const AWS = require("aws-sdk");
 
 module.exports.getAllProducts = (req, res) => {
-    // const limit = Number(req.query.limit) || 0;
-    // const sort = req.query.sort == 'desc' ? -1 : 1;
-    //
-    // Product.find()
-    //     .select(['-_id'])
-    //     .limit(limit)
-    //     .sort({id: sort})
-    //     .then((products) => {
-    //         res.json(products);
-    //     })
-    //     .catch((err) => console.log(err));
-    const params = {
-        TableName: 'products'
-    };
-    const client = new AWS.DynamoDB.DocumentClient();
-    client.scan(params, (err, data) => {
-        if (err) {
-            console.log(err);
-        } else {
-            var items = [];
-            for (var i in data.Items)
-                items.push(data.Items[i]);
+    const limit = Number(req.query.limit) || 0;
+    const sort = req.query.sort == 'desc' ? -1 : 1;
 
-            res.contentType = 'application/json';
-            res.send(items);
-        }
-    });
-        
+    Product.find()
+        .select(['-_id'])
+        .limit(limit)
+        .sort({id: sort})
+        .then((products) => {
+            res.json(products);
+        })
+        .catch((err) => console.log(err));
 };
 
 module.exports.getProduct = (req, res) => {
@@ -55,38 +37,19 @@ module.exports.getProductCategories = (req, res) => {
 
 module.exports.getProductsInCategory = (req, res) => {
     const category = req.params.category;
-    // const limit = Number(req.query.limit) || 0;
-    // const sort = req.query.sort == 'desc' ? -1 : 1;
-        const params = {
-            TableName: 'products',
-            ExpressionAttributeNames: { "#name": "name" },
-            ExpressionAttributeValues: {
-                ':category': category
-            }
-        };
-        const client = new AWS.DynamoDB.DocumentClient();
-        client.scan(params, (err, data) => {
-            if (err) {
-                console.log(err);
-            } else {
-                var items = [];
-                for (var i in data.Items)
-                    items.push(data.Items[i]);
+    const limit = Number(req.query.limit) || 0;
+    const sort = req.query.sort == 'desc' ? -1 : 1;
 
-                res.contentType = 'application/json';
-                res.send(items);
-            }
-        });
-    // Product.find({
-    //     category,
-    // })
-    //     .select(['-_id'])
-    //     .limit(limit)
-    //     .sort({id: sort})
-    //     .then((products) => {
-    //         res.json(products);
-    //     })
-    //     .catch((err) => console.log(err));
+    Product.find({
+        category,
+    })
+        .select(['-_id'])
+        .limit(limit)
+        .sort({id: sort})
+        .then((products) => {
+            res.json(products);
+        })
+        .catch((err) => console.log(err));
 };
 
 module.exports.addProduct = async (req, res) => {
