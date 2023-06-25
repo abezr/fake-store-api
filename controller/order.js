@@ -27,7 +27,7 @@ module.exports.getOrder = async (req, res) => {
     const client = CyclicDb("dungarees-crowCyclicDB")
     const col = client.collection('orders');
 
-    res.json(await col.get(id));
+    res.json(await col.get(""+id));
 };
 
 module.exports.addOrder = async (req, res) => {
@@ -63,7 +63,7 @@ module.exports.addOrder = async (req, res) => {
             products: req.body.products,
         };
 
-        await client.set(id, order);
+        await col.set(""+id, order);
         res.json(order);
     }
 };

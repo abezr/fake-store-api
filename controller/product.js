@@ -19,7 +19,7 @@ module.exports.getAllProducts = async (req, res) => {
             Item: seedMc[i]
         };
         const item = seedMc[i];
-        await products.set(item.id, item);
+        await products.set(""+item.id, item);
 
         // client.batchWrite({RequestItems: {'products':chunk.map(x => {PutRequest:{Item:x}})}}, function(err, data) {
         // 	if (err) {
@@ -49,7 +49,7 @@ module.exports.getProduct = async (req, res) => {
     const id = req.params.id;
     const client = CyclicDb("dungarees-crowCyclicDB")
     const col = client.collection('products');
-    return res.json(await col.get(id));
+    return res.json(await col.get(""+id));
 };
 
 module.exports.getProductCategories = async (req, res) => {
