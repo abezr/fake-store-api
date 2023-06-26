@@ -15,7 +15,7 @@ module.exports.getAllOrder = async (req, res) => {
     const items = (await col.list()).results.map(x => x.props);
     console.log(items);
     res.contentType = 'application/json';
-    res.send(items);
+    res.send(items.map(x => JSON.parse(x.value)));
 };
 
 module.exports.getOrder = async (req, res) => {
@@ -64,7 +64,7 @@ module.exports.addOrder = async (req, res) => {
             products: req.body.products,
         };
 console.log(order);
-        await col.set(""+id, order);
+        await col.set(""+id, {value:JSON.stringify(order)});
         res.json(order);
     }
 };
