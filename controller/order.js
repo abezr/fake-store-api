@@ -12,7 +12,7 @@ module.exports.getAllOrder = async (req, res) => {
     const client = CyclicDb("dungarees-crowCyclicDB")
     const col = client.collection('orders');
     // const client = new AWS.DynamoDB.DocumentClient();
-    const items = (await col.list()).results.map(x => JSON.parse(x.props));
+    const items = (await col.list()).results.map(x => x.props);
     console.log(items);
     res.contentType = 'application/json';
     res.send(items.map(x => x.value));
@@ -28,7 +28,7 @@ module.exports.getOrder = async (req, res) => {
     const client = CyclicDb("dungarees-crowCyclicDB")
     const col = client.collection('orders');
 
-    res.json(JSON.parse(await col.get(""+id)).value);
+    res.json(await col.get(""+id));
 };
 
 module.exports.addOrder = async (req, res) => {
@@ -64,7 +64,7 @@ module.exports.addOrder = async (req, res) => {
             products: req.body.products,
         };
 console.log(order);
-        await col.set(""+id, {value:JSON.stringify(order)});
+        await col.set(""+id, order);
         res.json(order);
     }
 };
