@@ -55,7 +55,7 @@ module.exports.getProduct = async (req, res) => {
 module.exports.getProductCategories = async (req, res) => {
     const client = CyclicDb("dungarees-crowCyclicDB")
     const col = client.collection('products');
-    const unique = [...new Set(Array.from(await col.list()).map(item => item.category))]; // [ 'A', 'B']
+    const unique = ["McDonalds","KFC","BurgerKING"];//[...new Set(Array.from(await col.list()).map(item => item.category))]; // [ 'A', 'B']
     return res.json(unique);
 };
 
