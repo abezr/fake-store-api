@@ -63,7 +63,8 @@ module.exports.addOrder = async (req, res) => {
             products: req.body.products,
         };
 console.log(order);
-        await col.set(""+id, order, {removeUndefinedValues:true});
+        await col.set(""+id, order, {removeUndefinedValues:true,
+            convertClassInstanceToMap:true});
         res.json(order);
     }
 };
