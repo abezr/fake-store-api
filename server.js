@@ -42,11 +42,11 @@ app.set('views', 'views');
 app.disable('view cache');
 
 app.use('/', homeRoute);
-app.use('/products', productRoute);
-app.use('/carts', cartRoute);
-app.use('/users', userRoute);
-app.use('/auth', authRoute);
-app.use('/orders', orderRoute);
+app.use('/api/products', productRoute);
+app.use('/api/carts', cartRoute);
+app.use('/api/users', userRoute);
+app.use('/api/auth', authRoute);
+app.use('/api/orders', orderRoute);
 
 //mongoose
 mongoose.set('useFindAndModify', false);
