@@ -12,7 +12,7 @@ module.exports.getAllOrder = async (req, res) => {
     const client = CyclicDb("dungarees-crowCyclicDB")
     const col = client.collection('orders');
     // const client = new AWS.DynamoDB.DocumentClient();
-    const items = (await col.list()).results.map(x => x.props);
+    const items = (await col.list());
     console.log(items);
     res.contentType = 'application/json';
     res.send(items.map(x => JSON.parse(x.value)));
