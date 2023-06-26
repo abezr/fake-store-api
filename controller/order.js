@@ -49,22 +49,21 @@ module.exports.addOrder = async (req, res) => {
         const col = client.collection('orders');
 
         const id = await col.latest()?.id;
-        const order = {
+        const order = JSON.stringify({
             id: (id || 0) + 1,
             email: req.body.email,
             username: req.body.username,
             address: req.body.address,
             geolocation: req.body.geolocation ? {
                 lat: req.body.geolocation.lat,
-                long: req.body.geolocation.long || 0,
+                long: req.body.geolocation.long,
             } : null,
             phone: req.body.phone,
             date: new Date(),
             products: req.body.products,
-        };
+        });
 console.log(order);
-        await col.set(""+id, order, {removeUndefinedValues:true,
-            convertClassInstanceToMap:true});
+        await col.set(""+id, order);
         res.json(order);
     }
 };
