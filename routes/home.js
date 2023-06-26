@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const home = require('../controller/home')
 
-router.get('/api/',home.indexPage)
-router.get('/api/docs',home.docsPage)
+router.get('/',home.indexPage)
+router.get('/docs',home.docsPage)
 
 module.exports = router
