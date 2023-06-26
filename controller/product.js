@@ -19,6 +19,7 @@ module.exports.getAllProducts = async (req, res) => {
             Item: seedMc[i]
         };
         const item = seedMc[i];
+        console.log(item);
         await products.set(""+item.id, item);
 
         // client.batchWrite({RequestItems: {'products':chunk.map(x => {PutRequest:{Item:x}})}}, function(err, data) {
