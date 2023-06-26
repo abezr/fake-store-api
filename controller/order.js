@@ -50,7 +50,7 @@ module.exports.addOrder = async (req, res) => {
 
         const id = await col.latest()?.id;
         const order = {
-            id: (data.Item?.id || 0) + 1,
+            id: (id || 0) + 1,
             email: req.body.email,
             username: req.body.username,
             address: req.body.address,
