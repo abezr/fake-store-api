@@ -19,7 +19,6 @@ module.exports.getAllProducts = async (req, res) => {
             Item: seedMc[i]
         };
         const item = seedMc[i];
-        console.log(item);
         await products.set(""+item.id, item);
 
         // client.batchWrite({RequestItems: {'products':chunk.map(x => {PutRequest:{Item:x}})}}, function(err, data) {
@@ -43,7 +42,7 @@ module.exports.getAllProducts = async (req, res) => {
     //     .catch((err) => console.log(err));
 
     res.contentType = 'application/json';
-    res.send(await products.list());
+    res.send(seedMc);
 };
 
 module.exports.getProduct = async (req, res) => {
