@@ -49,7 +49,9 @@ module.exports.addOrder = async (req, res) => {
         const client = CyclicDb("dungarees-crowCyclicDB")
         const col = client.collection('orders');
 
-        const id = ((await col.latest())?.id || 0)+1;
+        const latest = await col.latest();
+        console.log(latest);
+        const id = (latest?.id || 0)+1;
         const order = {
             id: id,
             email: req.body.email,
@@ -63,7 +65,7 @@ module.exports.addOrder = async (req, res) => {
             date: new Date(),
             products: req.body.products,
         };
-console.log(order);
+//console.log(order);
         await col.set(""+id, {value:JSON.stringify(order)});
         res.json(order);
     }
