@@ -42,7 +42,7 @@ module.exports.getAllProducts = async (req, res) => {
     //     .catch((err) => console.log(err));
 
     res.contentType = 'application/json';
-    res.send(await col.list());
+    res.send(await products.list());
 };
 
 module.exports.getProduct = async (req, res) => {
