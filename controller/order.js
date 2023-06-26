@@ -14,7 +14,7 @@ module.exports.getAllOrder = async (req, res) => {
     // const client = new AWS.DynamoDB.DocumentClient();
     const items = await col.list();
     res.contentType = 'application/json';
-    res.send(items);
+    res.send(items.map(x => x.value));
 };
 
 module.exports.getOrder = async (req, res) => {
@@ -27,7 +27,7 @@ module.exports.getOrder = async (req, res) => {
     const client = CyclicDb("dungarees-crowCyclicDB")
     const col = client.collection('orders');
 
-    res.json(JSON.parse(await col.get(""+id)));
+    res.json(JSON.parse(await col.get(""+id)).value);
 };
 
 module.exports.addOrder = async (req, res) => {
@@ -48,8 +48,8 @@ module.exports.addOrder = async (req, res) => {
         const client = CyclicDb("dungarees-crowCyclicDB")
         const col = client.collection('orders');
 
-        const id = await col.latest()?.id;
-        const order = JSON.stringify({
+        const id = (await col.latest())?.id;
+        const order = {
             id: (id || 0) + 1,
             email: req.body.email,
             username: req.body.username,
@@ -61,9 +61,9 @@ module.exports.addOrder = async (req, res) => {
             phone: req.body.phone,
             date: new Date(),
             products: req.body.products,
-        });
+        };
 console.log(order);
-        await col.set(""+id, order);
+        await col.set(""+id, {value:JSON.stringify(order)});
         res.json(order);
     }
 };
