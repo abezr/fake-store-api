@@ -66,7 +66,7 @@ module.exports.getProductsInCategory = async (req, res) => {
     // const limit = Number(req.query.limit) || 0;
     // const sort = req.query.sort == 'desc' ? -1 : 1;
             res.contentType = 'application/json';
-            res.send(await col.filter({category:category}).list());
+            res.send(await col.filter({category:category}));
     // Product.find({
     //     category,
     // })
