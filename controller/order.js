@@ -27,7 +27,7 @@ module.exports.getOrder = async (req, res) => {
     const client = CyclicDb("dungarees-crowCyclicDB")
     const col = client.collection('orders');
 
-    res.json(await col.get(""+id));
+    res.json(JSON.parse(await col.get(""+id)));
 };
 
 module.exports.addOrder = async (req, res) => {
