@@ -56,7 +56,7 @@ module.exports.addOrder = async (req, res) => {
             address: req.body.address,
             geolocation: req.body.geolocation ? {
                 lat: req.body.geolocation.lat,
-                long: req.body.geolocation.long,
+                long: req.body.geolocation.long || null,
             } : null,
             phone: req.body.phone,
             date: new Date(),
