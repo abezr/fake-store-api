@@ -62,8 +62,8 @@ module.exports.addOrder = async (req, res) => {
             date: new Date(),
             products: req.body.products,
         };
-
-        await col.set(""+id, order);
+console.log(order);
+        await col.set(""+id, order, {removeUndefinedValues:true});
         res.json(order);
     }
 };
