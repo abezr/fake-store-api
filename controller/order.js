@@ -15,7 +15,7 @@ module.exports.getAllOrder = async (req, res) => {
     const items = (await col.list());
     console.log(items);
     res.contentType = 'application/json';
-    res.send(items.map(x => JSON.parse(x.value)));
+    res.send(Array.from(items).map(x => JSON.parse(x.props.value)));
 };
 
 module.exports.getOrder = async (req, res) => {
